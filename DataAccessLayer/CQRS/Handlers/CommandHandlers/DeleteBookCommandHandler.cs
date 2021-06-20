@@ -1,19 +1,21 @@
 ﻿using DataAccessLayer.CQRS.Commands.Request;
 using DataAccessLayer.CQRS.Commands.Response;
 using DataAccessLayer.Data;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DataAccessLayer.CQRS.Handlers.CommandHandlers
 {
-    public class DeleteBookCommandHandler
+    public class DeleteBookCommandHandler : IRequestHandler<DeleteBookCommandRequest, DeleteBookCommandResponse>
     {
-        public DeleteBookCommandResponse DeleteBook(DeleteBookCommandRequest deleteBookCommandRequest)
+        public async Task<DeleteBookCommandResponse> Handle(DeleteBookCommandRequest request, CancellationToken cancellationToken)
         {
-            var deleteBook = DbContext.BookList.FirstOrDefault(p => p.Id == deleteBookCommandRequest.Id);
+            var deleteBook = DbContext.BookList.FirstOrDefault(p => p.Id == request.Id);
             DbContext.BookList.Remove(deleteBook);
             return new DeleteBookCommandResponse
             {
@@ -22,3 +24,4 @@ namespace DataAccessLayer.CQRS.Handlers.CommandHandlers
         }
     }
 }
+

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DataAccessLayer.CQRS.Commands.Response;
+using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.CQRS.Commands.Request
 {
-    public class CreateBookCommandRequest
+    public class CreateBookCommandRequest : IRequest<CreateBookCommandResponse>
     {
         public string Name { get; set; }
         public decimal Price { get; set; }
