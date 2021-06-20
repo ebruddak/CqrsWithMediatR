@@ -1,2 +1,2 @@
 # CqrsWithMediatR
-CQRS basit example with MediatR
+CQRS basic example with MediatR
