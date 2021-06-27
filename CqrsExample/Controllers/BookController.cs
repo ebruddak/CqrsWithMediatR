@@ -1,9 +1,13 @@
-﻿using DataAccessLayer.CQRS.Commands.Request;
+﻿using Arc.Cqrs.Application.Contracts.Books;
+using Arc.Cqrs.Application.Contracts.Books.Dtos;
+using DataAccessLayer.CQRS.Commands.Request;
 using DataAccessLayer.CQRS.Commands.Response;
 using DataAccessLayer.CQRS.Handlers.CommandHandlers;
 using DataAccessLayer.CQRS.Handlers.QueryHandlers;
 using DataAccessLayer.CQRS.Queries;
 using DataAccessLayer.CQRS.Queries.Response;
+using Mediator.Core;
+using Mediator.Core.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -12,52 +16,48 @@ using System.Threading.Tasks;
 
 namespace CqrsExample
 {
+  
+
     [Route("api/[controller]")]
     [ApiController]
     public class BookController : ControllerBase
     {
-        CreateBookCommandHandler _createBookCommandHandler;
-        DeleteBookCommandHandler _deleteBookCommandHandler;
-        GetAllBookQueryHandler _getAllBookQueryHandler;
-        GetByIdBookQueryHandler _getByIdBookQueryHandler;
-        public BookController(
-            CreateBookCommandHandler createBookCommandHandler,
-            DeleteBookCommandHandler deleteBookCommandHandler,
-            GetAllBookQueryHandler getAllBookQueryHandler,
-            GetByIdBookQueryHandler getByIdBookQueryHandler)
+        private readonly IMediatorBus _mediator;
+        private readonly IBookManager _bookManager;
+
+        public BookController(IMediatorBus mediator, IBookManager bookManager)
         {
-            _createBookCommandHandler = createBookCommandHandler;
-            _deleteBookCommandHandler = deleteBookCommandHandler;
-            _getAllBookQueryHandler = getAllBookQueryHandler;
-            _getByIdBookQueryHandler = getByIdBookQueryHandler;
+            _mediator = mediator;
+            _bookManager = bookManager;
         }
 
         [HttpGet]
-        public IActionResult Get([FromQuery] GetAllBookQueryRequest requestModel)
+        public async Task<IActionResult> Get()
         {
-            List<GetAllBookQueryResponse> allBooks = _getAllBookQueryHandler.GetAllBook(requestModel);
+            List<GetAllBookQueryResponse> allBooks = await _mediator.SendAsync(new GetAllBookQueryRequest());
             return Ok(allBooks);
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get([FromQuery] GetByIdBookQueryRequest requestModel)
+        public async Task<IActionResult> Get(GetByIdBookInput requestModel)
         {
-            GetByIdBookQueryResponse Book = _getByIdBookQueryHandler.GetByIdBook(requestModel);
+            GetByIdBookQueryResponse Book = await _mediator.SendAsync(new GetByIdBookQueryRequest { Id = requestModel.Id });
             return Ok(Book);
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] CreateBookCommandRequest requestModel)
+        public async Task<IActionResult> Post(CreateBookInput requestModel)
         {
-            CreateBookCommandResponse response = _createBookCommandHandler.CreateBook(requestModel);
+            CreateBookCommandResponse response = await _mediator.SendAsync(new CreateBookCommandRequest { Name=requestModel.Name, Price=requestModel.Price });
             return Ok(response);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete([FromQuery] DeleteBookCommandRequest requestModel)
+        public async Task<IActionResult> Delete(DeleteBookInput requestModel)
         {
-            DeleteBookCommandResponse response = _deleteBookCommandHandler.DeleteBook(requestModel);
+            DeleteBookCommandResponse response = await _mediator.SendAsync(new DeleteBookCommandRequest { Id=requestModel.Id } );
             return Ok(response);
         }
+
     }
 }

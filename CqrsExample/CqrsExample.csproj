@@ -5,11 +5,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\**" />
+    <Compile Remove="Entities\**" />
+    <Content Remove="Data\**" />
+    <Content Remove="Entities\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <EmbeddedResource Remove="Entities\**" />
+    <None Remove="Data\**" />
+    <None Remove="Entities\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataAccessLayer\DataAccessLayer.csproj" />
+    <ProjectReference Include="..\Arc.Cqrs.Application.Contracts\Arc.Cqrs.Application.Contracts.csproj" />
+    <ProjectReference Include="..\Arc.Cqrs.Application\Arc.Cqrs.Application.csproj" />
+    <ProjectReference Include="..\Arc.Cqrs.Domain\Arc.Cqrs.Domain.csproj" />
+    <ProjectReference Include="..\Mediator\Mediator.csproj" />
   </ItemGroup>
 
 </Project>
